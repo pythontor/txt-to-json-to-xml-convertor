@@ -1,0 +1,24 @@
+using convertor;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace скорогудаева6
+{
+    public class Buttons
+    {
+        public static void Load()
+        {
+            ConsoleKeyInfo button = Console.ReadKey();
+            if (button.Key == ConsoleKey.Escape) Program.Close();
+            else if (button.Key == ConsoleKey.F1) Filear.Save();
+            else
+            {
+                Console.Clear();
+                Program.PathToFile(Filear.dir);
+            }
+        }
+    }
+}
