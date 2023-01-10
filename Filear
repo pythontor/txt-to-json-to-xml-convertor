@@ -1,0 +1,105 @@
+using convertor;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Xml.Serialization;
+
+namespace скорогудаева6
+{
+    public class Filear
+    {
+        public static string url = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+        public static string dir = "";
+
+        public static bool Create()
+        {
+            string extension = Path.GetExtension(url + "/" + dir);
+            if (extension == ".txt")
+            {
+                using StreamWriter sw = File.CreateText(url + "/" + dir);
+                for (int i = 0; i < Program.DataList.Count; i++)
+                {
+                    sw.WriteLine(Program.DataList[i].Name);
+                    sw.WriteLine(Program.DataList[i].lenght.ToString());
+                    sw.WriteLine(Program.DataList[i].shirina.ToString());
+                    sw.WriteLine(Program.DataList[i].color);
+                }
+            }
+            else if (extension == ".json")
+            {
+                using StreamWriter sw = File.CreateText(url + "/" + dir);
+                sw.WriteLine(JsonConvert.SerializeObject(Program.DataList));
+            }
+            else if (extension == ".xml")
+            {
+                XmlSerializer xml = new XmlSerializer(Program.DataList.GetType());
+                using FileStream fs = new FileStream(url + "/" + dir, FileMode.OpenOrCreate);
+                xml.Serialize(fs, Program.DataList);
+            }
+            else return false;
+            return true;
+        }
+        public static void Open()
+        {
+            Console.WriteLine("F1 - Сохранить файл в одном из трёх фрагментов (txt, json, xml(не работает.))");
+            Console.WriteLine("Escape - Закрыть программу\n");
+
+            string extension = Path.GetExtension(url + "/" + dir);
+            if (extension == ".txt")
+            {
+                string[] list = File.ReadAllLines(url + "/" + dir);
+                foreach (var item in list) Console.WriteLine(item);
+            }
+            else if (extension == ".json")
+            {
+                List<MyDataFile> list = JsonConvert.DeserializeObject<List<MyDataFile>>(File.ReadAllText(url + "/" + dir));
+                foreach (MyDataFile item in list)
+                {
+                    Console.WriteLine(item.Name);
+                    Console.WriteLine(item.lenght.ToString());
+                    Console.WriteLine(item.shirina.ToString());
+                    Console.WriteLine(item.color);
+                }
+            }
+            else if (extension == ".xml")
+            {
+                XmlSerializer xml = new XmlSerializer(Program.DataList.GetType());
+                using (FileStream fs = new FileStream(url + "/" + dir, FileMode.Open))
+                {
+                    List<MyDataFile> list = (List<MyDataFile>)xml.Deserialize(fs);
+                    foreach (MyDataFile item in list)
+                    {
+                        Console.WriteLine(item.Name);
+                        Console.WriteLine(item.lenght.ToString());
+                        Console.WriteLine(item.shirina.ToString());
+                        Console.WriteLine(item.color);
+                    }
+                }
+            }
+
+            Buttons.Load();
+        }
+
+        public static void Save()
+        {
+            Console.Clear();
+            Console.WriteLine("├ Введите имя и тип файла чтобы его сохранить");
+
+            Console.Write($"\n{Filear.url} > ");
+            string readLine = Console.ReadLine();
+            Filear.dir = readLine;
+
+            if (Filear.Create())
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"Файл: {Filear.url}/{Filear.dir} - сохранён");
+            }
+            else Console.WriteLine($"Файл: {Filear.dir} - не удалось сохранить");
+
+            Program.Close();
+        }
+    }
+}
