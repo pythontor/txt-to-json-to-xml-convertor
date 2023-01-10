@@ -1,0 +1,59 @@
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Text.Json.Serialization;
+using System.Xml.Serialization;
+using Newtonsoft.Json;
+using скорогудаева6;
+
+namespace convertor
+{
+    internal class Program
+    {
+        public static List<MyDataFile> DataList = new List<MyDataFile>() 
+        {
+            new MyDataFile("Квадрат", "Красный", 12, 12),
+            new MyDataFile("Паралепипед", "Жёлтый", 34, 23),
+            new MyDataFile("Трапеция", "Зелёный", 250, 54),
+            new MyDataFile("Прямоугольник", "Синий", 13, 34)
+        };
+        static void Main(string[] args)
+        {
+            Console.WriteLine("├ Введите файл который хотите открыть (.txt, .json, .xml(не работает))");
+
+            Console.Write($"\n{Filear.url} > ");
+            string input = Console.ReadLine();
+            PathToFile(input);
+        }
+        public static void PathToFile(string readLine)
+        {
+            Filear.dir = readLine;
+
+            if (File.Exists(Filear.url + "/" + Filear.dir))
+            {
+                Console.Clear();
+                Filear.Open();
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Файл: {Filear.dir} - не найден!");
+
+                if (Filear.Create())
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine($"Создаю новый файл: {Filear.url}/{Filear.dir}");
+                }
+                else Console.WriteLine($"Файл: {Filear.dir} - не удалось создать");
+
+                Close();
+            }
+        }
+        public static void Close()
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("\nСпасибо что воспользовались текстовый редактором!");
+            Console.ForegroundColor = ConsoleColor.White;
+            Environment.Exit(0);
+        }
+    }
+}
